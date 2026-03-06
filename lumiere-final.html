@@ -1,0 +1,1055 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="author" content="LUMIÈRE CINEMAS">
+<meta name="copyright" content="Copyright © 2026 LUMIÈRE CINEMAS. All rights reserved.">
+<meta name="description" content="LUMIÈRE CINEMAS - The Art of Film. © 2026 All rights reserved. Unauthorized copying prohibited.">
+<title>LUMIÈRE CINEMAS — The Art of Film</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Bebas+Neue&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;user-select:none;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none}
+:root{
+  --gold:#b8955a;--gold-l:#d4af7a;--gold-d:#8a6e3e;
+  --gold-dim:rgba(184,149,90,.28);--gold-glow:rgba(184,149,90,.1);
+  --cream:#f5efe6;--black:#070707;--char:#0f0f0c;--smoke:#181814;
+  --td:rgba(245,239,230,.38);--tm:rgba(245,239,230,.62);--th:rgba(245,239,230,.85);
+}
+html{scroll-behavior:smooth}
+body{background:var(--black);color:var(--cream);font-family:'Jost',sans-serif;cursor:none;overflow-x:hidden}
+
+/* ── CURSOR ── */
+#cur,#cur-ring{position:fixed;pointer-events:none;z-index:9999;border-radius:50%;transform:translate(-50%,-50%)}
+#cur{width:7px;height:7px;background:var(--gold)}
+#cur-ring{width:36px;height:36px;border:1px solid rgba(184,149,90,.45);transition:width .3s,height .3s}
+#cur-ring.big{width:56px;height:56px}
+#trail-canvas{position:fixed;inset:0;z-index:9990;pointer-events:none}
+@media(max-width:768px){#cur,#cur-ring,#trail-canvas{display:none}body{cursor:auto}}
+
+/* ── GRAIN ── */
+.grain{position:fixed;inset:0;z-index:500;pointer-events:none;opacity:.03;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size:200px;animation:grain .5s steps(1) infinite}
+@keyframes grain{0%{transform:translate(0,0)}20%{transform:translate(3%,1%)}40%{transform:translate(2%,-1%)}60%{transform:translate(1%,-2%)}80%{transform:translate(3%,-3%)}100%{transform:translate(2%,0%)}}
+
+/* ── VIGNETTE ── */
+.vignette{position:fixed;inset:0;z-index:100;pointer-events:none;
+  background:radial-gradient(ellipse at center,transparent 40%,rgba(0,0,0,.5) 75%,rgba(0,0,0,.9) 100%)}
+
+/* ── BARS & HUD ── */
+.bar-top,.bar-bottom{position:fixed;left:0;right:0;background:var(--black);z-index:400}
+.bar-top{top:0;height:70px}.bar-bottom{bottom:0;height:70px}
+.corner{position:fixed;width:26px;height:26px;z-index:410}
+.corner::before{content:'';position:absolute;background:var(--gold);opacity:.4;width:100%;height:1px;top:0;left:0}
+.corner::after{content:'';position:absolute;background:var(--gold);opacity:.4;width:1px;height:100%;top:0;left:0}
+.corner.tl{top:22px;left:26px}.corner.tr{top:22px;right:26px;transform:scaleX(-1)}
+.corner.bl{bottom:22px;left:26px;transform:scaleY(-1)}.corner.br{bottom:22px;right:26px;transform:scale(-1)}
+@media(max-width:768px){.corner,.bar-bottom,.hud-l,.hud-r{display:none}}
+.hud-l{position:fixed;bottom:24px;left:44px;font-size:8px;letter-spacing:.35em;color:rgba(184,149,90,.3);z-index:410;font-weight:200}
+.hud-r{position:fixed;bottom:24px;right:44px;font-size:8px;letter-spacing:.35em;color:rgba(184,149,90,.3);z-index:410;font-weight:200}
+#pgbar{position:fixed;top:70px;left:0;height:1px;background:linear-gradient(to right,transparent,var(--gold),var(--gold-l));z-index:410;width:0;transition:width .08s linear}
+
+/* ── NAV ── */
+nav{position:fixed;top:0;left:0;right:0;height:70px;z-index:420;display:flex;align-items:center;justify-content:space-between;padding:0 48px}
+.nav-logo{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.18em;
+  background:linear-gradient(135deg,#f5efe6,#b8955a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;cursor:none;flex-shrink:0}
+.nav-links{display:flex;gap:32px;align-items:center}
+@media(max-width:900px){.nav-links{display:none}}
+.nav-link{font-size:9px;letter-spacing:.4em;text-transform:uppercase;color:var(--td);font-weight:300;cursor:none;transition:color .3s;text-decoration:none}
+.nav-link:hover{color:var(--gold)}
+.nav-right{display:flex;align-items:center;gap:14px}
+.nav-cta{font-size:9px;letter-spacing:.4em;text-transform:uppercase;color:var(--black);
+  background:var(--gold);padding:10px 24px;cursor:none;border:none;font-family:'Jost',sans-serif;font-weight:400;
+  position:relative;overflow:hidden;transition:background .3s;flex-shrink:0}
+.nav-cta::before{content:'';position:absolute;inset:0;background:var(--gold-l);transform:translateX(-101%);transition:transform .4s cubic-bezier(.76,0,.24,1)}
+.nav-cta:hover::before{transform:translateX(0)}
+.nav-cta span{position:relative;z-index:1}
+
+/* Hamburger */
+.nav-burger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:8px;z-index:430;background:none;border:none}
+@media(max-width:900px){.nav-burger{display:flex}}
+.burger-line{width:24px;height:1px;background:var(--gold);transition:transform .3s,opacity .3s}
+.nav-burger.open .burger-line:nth-child(1){transform:translateY(6px) rotate(45deg)}
+.nav-burger.open .burger-line:nth-child(2){opacity:0}
+.nav-burger.open .burger-line:nth-child(3){transform:translateY(-6px) rotate(-45deg)}
+
+/* Mobile drawer */
+.mobile-menu{position:fixed;inset:0;background:rgba(7,7,7,.97);z-index:415;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:32px;
+  opacity:0;pointer-events:none;transition:opacity .4s}
+.mobile-menu.open{opacity:1;pointer-events:all}
+.mob-link{font-family:'Bebas Neue',sans-serif;font-size:42px;letter-spacing:.12em;color:var(--td);
+  text-decoration:none;transition:color .3s;cursor:pointer}
+.mob-link:hover{color:var(--gold)}
+.mob-cta{margin-top:16px;font-size:9px;letter-spacing:.5em;text-transform:uppercase;
+  color:var(--black);background:var(--gold);padding:14px 40px;border:none;font-family:'Jost',sans-serif;cursor:pointer}
+
+/* ── REVEAL ── */
+.reveal{opacity:0;transform:translateY(32px);transition:opacity .9s ease,transform .9s cubic-bezier(.23,1,.32,1)}
+.reveal.visible{opacity:1;transform:translateY(0)}
+.rd1{transition-delay:.08s}.rd2{transition-delay:.18s}.rd3{transition-delay:.3s}.rd4{transition-delay:.44s}.rd5{transition-delay:.6s}
+
+/* ── SHARED ── */
+.sec-label{font-size:8px;letter-spacing:.55em;text-transform:uppercase;color:var(--gold);font-weight:200;
+  display:flex;align-items:center;gap:14px;margin-bottom:14px}
+.sec-label::after{content:'';flex:1;height:1px;background:var(--gold-dim);max-width:80px}
+.gold-rule{height:1px;background:linear-gradient(to right,transparent,var(--gold-dim),var(--gold),var(--gold-dim),transparent)}
+.btn-g{font-family:'Jost',sans-serif;font-weight:300;font-size:9px;letter-spacing:.55em;text-transform:uppercase;
+  color:var(--black);background:var(--gold);border:1px solid var(--gold);padding:15px 40px;cursor:none;
+  position:relative;overflow:hidden;transition:background .3s}
+.btn-g::before{content:'';position:absolute;inset:0;background:var(--gold-l);transform:translateX(-101%);transition:transform .5s cubic-bezier(.76,0,.24,1)}
+.btn-g:hover::before{transform:translateX(0)}
+.btn-g span{position:relative;z-index:1}
+.btn-o{font-family:'Jost',sans-serif;font-weight:300;font-size:9px;letter-spacing:.55em;text-transform:uppercase;
+  color:var(--cream);background:none;border:1px solid rgba(184,149,90,.35);padding:15px 40px;cursor:none;
+  position:relative;overflow:hidden;transition:border-color .3s,color .3s}
+.btn-o::before{content:'';position:absolute;inset:0;background:rgba(184,149,90,.09);transform:translateX(-101%);transition:transform .5s cubic-bezier(.76,0,.24,1);z-index:-1}
+.btn-o:hover::before{transform:translateX(0)}
+.btn-o:hover{border-color:rgba(184,149,90,.65)}
+@media(max-width:600px){.btn-g,.btn-o{padding:14px 28px;font-size:8px}}
+
+/* ═══════ HERO ═══════ */
+#hero{position:relative;height:100vh;min-height:600px;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden}
+.hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse 70% 55% at 65% 42%,rgba(55,32,8,.7) 0%,transparent 65%),radial-gradient(ellipse 50% 60% at 20% 65%,rgba(15,12,4,.85) 0%,transparent 60%),linear-gradient(155deg,#0d0b07,#12100a 45%,#090807)}
+.hero-streak{position:absolute;top:-20%;left:54%;width:1px;height:140%;background:linear-gradient(to bottom,transparent 20%,rgba(184,149,90,.13) 48%,rgba(212,175,122,.22) 50%,rgba(184,149,90,.13) 52%,transparent 80%);transform:rotate(12deg)}
+.hero-streak::before{content:'';position:absolute;top:0;left:-28px;width:56px;height:100%;background:inherit;filter:blur(18px)}
+.particles{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.particle{position:absolute;width:1px;height:1px;background:var(--gold);border-radius:50%;opacity:0;animation:ptcl linear infinite}
+@keyframes ptcl{0%{transform:translateY(100vh);opacity:0}10%{opacity:.5}90%{opacity:.12}100%{transform:translateY(-8vh) translateX(14px);opacity:0}}
+.hero-content{position:relative;z-index:10;text-align:center;padding:0 20px}
+.h-eyebrow{font-size:9px;letter-spacing:.55em;text-transform:uppercase;color:var(--gold);font-weight:200;margin-bottom:20px;opacity:0;transform:translateY(10px);animation:rise 1s ease .5s forwards}
+.h-wordmark{font-family:'Bebas Neue',sans-serif;font-size:clamp(72px,13vw,196px);line-height:.84;letter-spacing:.1em;
+  background:linear-gradient(180deg,#f5efe6,#c9b99a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  opacity:0;transform:translateY(22px);animation:rise 1.3s cubic-bezier(.23,1,.32,1) .75s forwards}
+.h-sub{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:300;font-size:clamp(14px,1.7vw,20px);color:var(--td);letter-spacing:.04em;margin-top:22px;margin-bottom:26px;opacity:0;animation:fadein .8s ease 1.6s forwards}
+.h-rule{width:0;height:1px;margin:0 auto 30px;background:linear-gradient(to right,transparent,var(--gold),transparent);transition:width 1.4s cubic-bezier(.76,0,.24,1)}
+.h-rule.open{width:260px}
+.h-meta{display:flex;align-items:center;gap:20px;justify-content:center;flex-wrap:wrap;opacity:0;animation:rise .8s ease 2s forwards}
+.h-meta span{font-size:9px;letter-spacing:.4em;text-transform:uppercase;color:var(--td);font-weight:200}
+.h-meta i{width:3px;height:3px;background:var(--gold);border-radius:50%;opacity:.5;display:inline-block;flex-shrink:0}
+@media(max-width:600px){.h-meta i:nth-child(4),.h-meta span:nth-child(5),.h-meta i:nth-child(6),.h-meta span:nth-child(7){display:none}}
+.h-btns{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:36px;opacity:0;animation:rise .8s ease 2.3s forwards}
+.scroll-hint{position:absolute;bottom:100px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:9px;opacity:0;animation:fadein 1s ease 3s forwards;z-index:10}
+.scroll-line{width:1px;height:44px;background:linear-gradient(to bottom,var(--gold),transparent);animation:spulse 2s ease-in-out infinite}
+@keyframes spulse{0%,100%{opacity:.3}50%{opacity:1}}
+.scroll-lbl{font-size:7px;letter-spacing:.45em;color:var(--gold);opacity:.4;text-transform:uppercase}
+@media(max-width:768px){.scroll-hint{bottom:80px}}
+
+/* ═══════ ABOUT ═══════ */
+#about{padding:140px 72px;background:var(--char);position:relative;overflow:hidden}
+@media(max-width:768px){#about{padding:90px 28px}}
+#about::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(to right,transparent,var(--gold-dim),var(--gold),var(--gold-dim),transparent)}
+.about-layout{display:grid;grid-template-columns:1fr 1fr;gap:100px;align-items:center}
+@media(max-width:900px){.about-layout{grid-template-columns:1fr;gap:60px}}
+
+.about-left{}
+.about-headline{font-family:'Bebas Neue',sans-serif;font-size:clamp(52px,7vw,100px);line-height:.87;letter-spacing:.07em;
+  background:linear-gradient(135deg,#f5efe6,#b8955a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:32px}
+.about-pull{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:clamp(20px,2.5vw,28px);font-weight:300;
+  color:var(--gold-l);line-height:1.5;border-left:2px solid var(--gold);padding-left:24px;margin-bottom:36px}
+.about-body{font-family:'Cormorant Garamond',serif;font-weight:300;font-size:17px;line-height:1.9;color:var(--tm);margin-bottom:20px}
+.about-body+.about-body{margin-top:0}
+.about-sig{margin-top:36px;display:flex;align-items:center;gap:18px}
+.about-sig-line{width:40px;height:1px;background:var(--gold)}
+.about-sig-text{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:15px;color:var(--td)}
+
+/* Timeline */
+.about-timeline{display:flex;flex-direction:column;gap:0}
+.tl-item{display:flex;gap:24px;padding:22px 0;border-bottom:1px solid rgba(184,149,90,.1);position:relative}
+.tl-item:first-child{border-top:1px solid rgba(184,149,90,.1)}
+.tl-year{font-family:'Bebas Neue',sans-serif;font-size:36px;color:var(--gold-dim);letter-spacing:.06em;line-height:1;flex-shrink:0;width:72px;padding-top:2px}
+.tl-content{}
+.tl-title{font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--cream);font-weight:300;margin-bottom:6px}
+.tl-desc{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:14px;color:var(--td);line-height:1.6}
+.tl-dot{position:absolute;left:-1px;top:50%;width:6px;height:6px;background:var(--gold);border-radius:50%;transform:translateY(-50%);display:none}
+
+/* ═══════ NOW SHOWING ═══════ */
+#now-showing{padding:130px 72px;background:linear-gradient(180deg,var(--black) 0%,var(--char) 100%);position:relative}
+@media(max-width:768px){#now-showing{padding:90px 28px}}
+.ns-head{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:56px;flex-wrap:wrap;gap:16px}
+.ns-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(46px,7vw,92px);line-height:.9;letter-spacing:.07em;
+  background:linear-gradient(135deg,#f5efe6,#c9b99a 60%,#b8955a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.ns-date{font-size:9px;letter-spacing:.4em;color:var(--td);font-weight:200;text-transform:uppercase;padding-bottom:8px}
+.screen-tabs{display:flex;gap:0;margin-bottom:44px;border-bottom:1px solid var(--gold-dim);overflow-x:auto;scrollbar-width:none}
+.screen-tabs::-webkit-scrollbar{display:none}
+.stab{font-size:9px;letter-spacing:.4em;text-transform:uppercase;color:var(--td);font-weight:300;padding:12px 24px;cursor:none;background:none;border:none;font-family:'Jost',sans-serif;position:relative;transition:color .3s;white-space:nowrap}
+.stab.active{color:var(--gold)}.stab.active::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:1px;background:var(--gold)}
+.stab:hover{color:var(--tm)}
+.films-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:22px}
+@media(max-width:1100px){.films-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:520px){.films-grid{grid-template-columns:1fr}}
+.film-card{position:relative;cursor:none}
+.film-poster{aspect-ratio:2/3;position:relative;overflow:hidden;margin-bottom:14px}
+.film-poster-art{position:absolute;inset:0;transition:transform .6s cubic-bezier(.23,1,.32,1),filter .4s}
+.film-card:hover .film-poster-art{transform:scale(1.05)}
+.pa1{background:radial-gradient(ellipse 60% 80% at 40% 60%,rgba(160,80,20,.6) 0%,transparent 65%),linear-gradient(160deg,#1a0e04,#2d1a08 50%,#0c0b09)}
+.pa2{background:radial-gradient(ellipse 50% 70% at 60% 35%,rgba(60,90,160,.55) 0%,transparent 60%),linear-gradient(200deg,#060d1a,#101828 50%,#080a0e)}
+.pa3{background:radial-gradient(ellipse 70% 60% at 50% 50%,rgba(140,30,30,.5) 0%,transparent 65%),linear-gradient(150deg,#100806,#1e0c0a 50%,#090807)}
+.pa4{background:radial-gradient(ellipse 55% 75% at 35% 65%,rgba(30,120,80,.45) 0%,transparent 60%),linear-gradient(170deg,#06100c,#0c1a14 50%,#080d0b)}
+.film-poster-art::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 40% 50% at 70% 25%,rgba(255,255,255,.07) 0%,transparent 55%)}
+.film-poster-art::after{content:'';position:absolute;bottom:0;left:0;right:0;height:55%;background:linear-gradient(to top,rgba(0,0,0,.9),rgba(0,0,0,.4) 50%,transparent)}
+.film-rating-badge{position:absolute;top:12px;right:12px;background:var(--gold);font-size:8px;letter-spacing:.25em;color:var(--black);padding:4px 9px;font-weight:400;z-index:2}
+.film-format{position:absolute;top:12px;left:12px;border:1px solid rgba(184,149,90,.5);font-size:7px;letter-spacing:.3em;color:var(--gold);padding:4px 8px;font-weight:300;z-index:2}
+.film-overlay{position:absolute;inset:0;background:rgba(0,0,0,.0);transition:background .4s;z-index:3;display:flex;align-items:center;justify-content:center}
+.film-card:hover .film-overlay{background:rgba(0,0,0,.35)}
+.film-book-btn{font-size:8px;letter-spacing:.4em;text-transform:uppercase;color:var(--cream);border:1px solid rgba(245,239,230,.6);padding:10px 22px;opacity:0;transform:translateY(8px);transition:opacity .3s,transform .3s,background .3s,border-color .3s;cursor:none;background:none;font-family:'Jost',sans-serif}
+.film-card:hover .film-book-btn{opacity:1;transform:translateY(0)}
+.film-book-btn:hover{background:var(--gold);border-color:var(--gold);color:var(--black)}
+.film-genre{font-size:8px;letter-spacing:.4em;text-transform:uppercase;color:var(--gold);font-weight:200;margin-bottom:6px}
+.film-title{font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:600;color:var(--cream);margin-bottom:5px;line-height:1.2}
+.film-times{display:flex;gap:7px;flex-wrap:wrap;margin-top:9px}
+.film-time{font-size:8px;letter-spacing:.25em;color:var(--td);border:1px solid var(--gold-dim);padding:5px 9px;cursor:none;transition:background .3s,color .3s,border-color .3s;font-weight:200}
+.film-time:hover{background:var(--gold);color:var(--black);border-color:var(--gold)}
+.film-duration{font-size:8px;letter-spacing:.25em;color:var(--td);font-weight:200;margin-top:5px}
+
+/* ═══════ SEAT MAP ═══════ */
+#seatmap{padding:130px 72px;background:var(--smoke);position:relative;overflow:hidden}
+@media(max-width:768px){#seatmap{padding:90px 28px}}
+#seatmap::before,#seatmap::after{content:'';position:absolute;left:0;right:0;height:1px;background:linear-gradient(to right,transparent,var(--gold-dim),var(--gold),var(--gold-dim),transparent)}
+#seatmap::before{top:0}#seatmap::after{bottom:0}
+.seatmap-layout{display:grid;grid-template-columns:1fr 380px;gap:60px;align-items:start}
+@media(max-width:1100px){.seatmap-layout{grid-template-columns:1fr}}
+
+.seatmap-left{}
+.seatmap-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(44px,6vw,88px);line-height:.88;letter-spacing:.07em;
+  background:linear-gradient(135deg,#f5efe6,#b8955a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:12px}
+.seatmap-sub{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:16px;color:var(--td);margin-bottom:40px}
+
+/* Screen */
+.screen-wrap{text-align:center;margin-bottom:32px}
+.screen-label-top{font-size:8px;letter-spacing:.4em;text-transform:uppercase;color:var(--gold);opacity:.5;margin-bottom:8px;display:block}
+.screen-bar{height:4px;background:linear-gradient(to right,transparent,var(--gold-l),var(--cream),var(--gold-l),transparent);
+  border-radius:2px;box-shadow:0 0 30px rgba(212,175,122,.35),0 0 60px rgba(184,149,90,.15);margin-bottom:4px}
+.screen-bar-glow{height:12px;background:linear-gradient(to bottom,rgba(212,175,122,.12),transparent);border-radius:0 0 50% 50%}
+
+/* Seat grid */
+.seat-map-grid{display:flex;flex-direction:column;gap:6px;padding:0 20px}
+.seat-row-wrap{display:flex;align-items:center;gap:12px}
+.row-label{font-size:8px;letter-spacing:.2em;color:var(--td);font-weight:200;width:14px;text-align:center;flex-shrink:0}
+.seat-row{display:flex;gap:5px;flex:1;justify-content:center}
+.seat{width:18px;height:15px;border-radius:3px 3px 1px 1px;border:1px solid;cursor:none;
+  transition:background .2s,border-color .2s,transform .15s;position:relative;flex-shrink:0}
+.seat:hover{transform:scale(1.15)}
+.seat.avail{background:rgba(184,149,90,.12);border-color:rgba(184,149,90,.3)}
+.seat.avail:hover{background:rgba(184,149,90,.5);border-color:var(--gold)}
+.seat.taken{background:rgba(245,239,230,.07);border-color:rgba(245,239,230,.1);cursor:not-allowed}
+.seat.taken:hover{transform:none}
+.seat.vip-seat{background:rgba(212,175,122,.18);border-color:rgba(212,175,122,.5)}
+.seat.vip-seat:hover{background:rgba(212,175,122,.6);border-color:var(--gold-l)}
+.seat.selected{background:var(--gold);border-color:var(--gold-l)}
+.seat.selected:hover{background:var(--gold-l)}
+.seat-gap{width:18px;flex-shrink:0}
+
+/* Legend + summary */
+.seat-legend{display:flex;gap:20px;flex-wrap:wrap;margin-top:24px;padding:0 20px}
+.legend-item{display:flex;align-items:center;gap:8px;font-size:8px;letter-spacing:.3em;text-transform:uppercase;color:var(--td);font-weight:200}
+.legend-dot{width:14px;height:11px;border-radius:2px 2px 1px 1px;border:1px solid}
+.ld-avail{background:rgba(184,149,90,.12);border-color:rgba(184,149,90,.3)}
+.ld-vip{background:rgba(212,175,122,.18);border-color:rgba(212,175,122,.5)}
+.ld-taken{background:rgba(245,239,230,.07);border-color:rgba(245,239,230,.1)}
+.ld-selected{background:var(--gold);border-color:var(--gold-l)}
+
+/* Summary panel */
+.seatmap-panel{background:rgba(184,149,90,.04);border:1px solid rgba(184,149,90,.15);padding:32px 28px;position:sticky;top:90px}
+.panel-title{font-size:9px;letter-spacing:.45em;text-transform:uppercase;color:var(--gold);font-weight:300;margin-bottom:24px;padding-bottom:16px;border-bottom:1px solid rgba(184,149,90,.12)}
+.panel-film{margin-bottom:24px}
+.panel-film-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;color:var(--cream);margin-bottom:4px}
+.panel-film-meta{font-size:8px;letter-spacing:.3em;color:var(--td);font-weight:200}
+.panel-showtime{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0 24px}
+.pst{font-size:8px;letter-spacing:.25em;color:var(--td);border:1px solid var(--gold-dim);padding:7px 12px;cursor:none;transition:all .25s}
+.pst.active,.pst:hover{background:var(--gold);color:var(--black);border-color:var(--gold)}
+.panel-selected{margin-bottom:24px}
+.ps-label{font-size:8px;letter-spacing:.35em;text-transform:uppercase;color:var(--td);margin-bottom:10px}
+.ps-seats{display:flex;flex-wrap:wrap;gap:6px;min-height:28px}
+.ps-tag{font-size:8px;letter-spacing:.2em;background:rgba(184,149,90,.15);border:1px solid var(--gold-dim);color:var(--gold);padding:4px 10px}
+.ps-empty{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:13px;color:var(--td)}
+.panel-price{display:flex;justify-content:space-between;align-items:baseline;padding:16px 0;border-top:1px solid rgba(184,149,90,.12);border-bottom:1px solid rgba(184,149,90,.12);margin-bottom:20px}
+.price-label{font-size:8px;letter-spacing:.35em;text-transform:uppercase;color:var(--td);font-weight:200}
+.price-val{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:.06em;color:var(--gold)}
+.panel-btn{width:100%;font-family:'Jost',sans-serif;font-weight:300;font-size:9px;letter-spacing:.5em;text-transform:uppercase;
+  color:var(--black);background:var(--gold);border:none;padding:16px;cursor:none;
+  position:relative;overflow:hidden;transition:background .3s}
+.panel-btn::before{content:'';position:absolute;inset:0;background:var(--gold-l);transform:translateX(-101%);transition:transform .5s cubic-bezier(.76,0,.24,1)}
+.panel-btn:hover::before{transform:translateX(0)}
+.panel-btn span{position:relative;z-index:1}
+
+/* ═══════ EXPERIENCE ═══════ */
+#experience{padding:140px 72px;background:var(--char);position:relative;overflow:hidden}
+@media(max-width:768px){#experience{padding:90px 28px}}
+.exp-layout{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center}
+@media(max-width:900px){.exp-layout{grid-template-columns:1fr}}
+.exp-headline{font-family:'Bebas Neue',sans-serif;font-size:clamp(48px,7vw,94px);line-height:.88;letter-spacing:.06em;
+  background:linear-gradient(135deg,#f5efe6,#b8955a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:24px}
+.exp-copy{font-family:'Cormorant Garamond',serif;font-weight:300;font-size:17px;line-height:1.8;color:var(--tm);margin-bottom:36px}
+.exp-copy em{font-style:italic;color:var(--gold-l)}
+.specs-list{display:flex;flex-direction:column}
+.spec-row{display:flex;align-items:center;gap:18px;padding:16px 0;border-bottom:1px solid rgba(184,149,90,.1)}
+.spec-row:first-child{border-top:1px solid rgba(184,149,90,.1)}
+.spec-icon{width:38px;height:38px;border:1px solid var(--gold-dim);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:13px}
+.spec-name{font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--cream);font-weight:300;margin-bottom:3px}
+.spec-detail{font-size:11px;color:var(--td);font-family:'Cormorant Garamond',serif;font-style:italic}
+.spec-badge{font-size:7px;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);border:1px solid var(--gold-dim);padding:4px 9px;font-weight:300;flex-shrink:0}
+.screen-art{aspect-ratio:4/3;position:relative;overflow:hidden;background:linear-gradient(135deg,#0d0b08,#1a1208 40%,#0a0908);border:1px solid rgba(184,149,90,.15)}
+.screen-art::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 45%,rgba(184,149,90,.08),transparent 65%)}
+.screen-inner{position:absolute;inset:14px;border:1px solid rgba(184,149,90,.12);display:flex;align-items:center;justify-content:center;overflow:hidden}
+.screen-beam{position:absolute;top:0;left:50%;width:2px;height:100%;background:linear-gradient(to bottom,rgba(212,175,122,.4),rgba(184,149,90,.08) 60%,transparent);transform:translateX(-50%);filter:blur(1px)}
+.screen-beam::before{content:'';position:absolute;top:0;left:-40px;width:80px;height:100%;background:linear-gradient(to bottom,rgba(212,175,122,.07),transparent 70%);filter:blur(12px)}
+.seats-art{position:absolute;bottom:0;left:0;right:0;height:48%;background:linear-gradient(to top,rgba(10,8,5,.95),transparent)}
+.seats-rows{position:absolute;bottom:8px;left:0;right:0;display:flex;flex-direction:column;gap:3px;padding:0 8px}
+.seats-row{display:flex;gap:3px;justify-content:center}
+.seat-dot{width:6px;height:5px;border-radius:1px;background:rgba(184,149,90,.2)}
+.seat-dot.on{background:rgba(184,149,90,.55)}
+.screen-lbl{position:absolute;top:20px;left:50%;transform:translateX(-50%);font-size:7px;letter-spacing:.5em;color:rgba(184,149,90,.4);text-transform:uppercase;white-space:nowrap}
+.screen-stats{display:grid;grid-template-columns:1fr 1fr;gap:1px;margin-top:1px}
+.sstat{background:rgba(184,149,90,.04);padding:14px 18px;border:1px solid rgba(184,149,90,.1)}
+.sstat-val{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:.06em;color:var(--gold);margin-bottom:3px}
+.sstat-lbl{font-size:8px;letter-spacing:.3em;text-transform:uppercase;color:var(--td);font-weight:200}
+
+/* ═══════ DINING ═══════ */
+#dining{padding:140px 72px;background:linear-gradient(180deg,var(--black) 0%,var(--char) 100%);position:relative;overflow:hidden}
+@media(max-width:768px){#dining{padding:90px 28px}}
+.dining-header{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:60px;flex-wrap:wrap;gap:20px}
+.dining-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(46px,7vw,96px);line-height:.9;letter-spacing:.07em;
+  background:linear-gradient(135deg,#f5efe6,#b8955a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.dining-sub{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:16px;color:var(--td);padding-bottom:8px}
+
+/* Menu tabs */
+.menu-tabs{display:flex;gap:0;margin-bottom:48px;border-bottom:1px solid var(--gold-dim);overflow-x:auto;scrollbar-width:none}
+.menu-tabs::-webkit-scrollbar{display:none}
+.mtab{font-size:9px;letter-spacing:.4em;text-transform:uppercase;color:var(--td);font-weight:300;padding:12px 24px;cursor:none;background:none;border:none;font-family:'Jost',sans-serif;position:relative;transition:color .3s;white-space:nowrap}
+.mtab.active{color:var(--gold)}.mtab.active::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:1px;background:var(--gold)}
+.mtab:hover{color:var(--tm)}
+
+/* Menu panels */
+.menu-panel{display:none}.menu-panel.active{display:grid;grid-template-columns:1fr 1fr;gap:2px}
+@media(max-width:700px){.menu-panel.active{grid-template-columns:1fr}}
+
+.menu-item{background:rgba(184,149,90,.03);border:1px solid rgba(184,149,90,.1);padding:28px 24px;
+  cursor:none;transition:background .3s,border-color .3s;position:relative;overflow:hidden}
+.menu-item:hover{background:rgba(184,149,90,.07);border-color:rgba(184,149,90,.28)}
+.menu-item::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;
+  background:linear-gradient(to right,transparent,var(--gold-dim),transparent);transform:scaleX(0);transition:transform .4s}
+.menu-item:hover::after{transform:scaleX(1)}
+.menu-item-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;gap:12px}
+.menu-item-name{font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:600;color:var(--cream);line-height:1.2}
+.menu-item-price{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:.05em;color:var(--gold);flex-shrink:0}
+.menu-item-desc{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:13px;color:var(--td);line-height:1.6;margin-bottom:12px}
+.menu-item-tags{display:flex;gap:6px;flex-wrap:wrap}
+.menu-tag{font-size:7px;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);border:1px solid rgba(184,149,90,.2);padding:3px 8px;font-weight:200}
+.menu-featured{background:rgba(184,149,90,.07);border:1px solid rgba(184,149,90,.25)}
+.menu-featured-badge{position:absolute;top:0;right:0;background:var(--gold);font-size:7px;letter-spacing:.3em;text-transform:uppercase;color:var(--black);padding:4px 10px;font-weight:400}
+
+/* Dining ambience strip */
+.dining-ambience{margin-top:48px;display:grid;grid-template-columns:repeat(3,1fr);gap:2px}
+@media(max-width:600px){.dining-ambience{grid-template-columns:1fr}}
+.amb-card{aspect-ratio:16/9;position:relative;overflow:hidden;cursor:none}
+.amb-art{position:absolute;inset:0;transition:transform .6s cubic-bezier(.23,1,.32,1)}
+.amb-card:hover .amb-art{transform:scale(1.07)}
+.aa1{background:radial-gradient(ellipse 55% 70% at 40% 55%,rgba(184,149,90,.35),transparent 65%),linear-gradient(145deg,#16100a,#221808)}
+.aa2{background:radial-gradient(ellipse 60% 60% at 60% 45%,rgba(140,100,40,.4),transparent 60%),linear-gradient(170deg,#0e0c07,#1a1408)}
+.aa3{background:radial-gradient(ellipse 50% 65% at 45% 60%,rgba(100,70,20,.45),transparent 65%),linear-gradient(155deg,#120e09,#1c1610)}
+.amb-label{position:absolute;bottom:16px;left:18px;font-size:8px;letter-spacing:.4em;text-transform:uppercase;color:var(--gold);font-weight:200}
+
+/* ═══════ VIP ═══════ */
+#vip{padding:140px 72px;background:var(--smoke);position:relative;overflow:hidden}
+@media(max-width:768px){#vip{padding:90px 28px}}
+.vip-layout{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:start}
+@media(max-width:900px){.vip-layout{grid-template-columns:1fr}}
+.vip-art{position:relative;aspect-ratio:3/4}
+.vip-art-frame{position:absolute;inset:0;overflow:hidden;background:linear-gradient(145deg,#120e07,#1e1508 40%,rgba(184,149,90,.18) 70%,#0d0b08);border:1px solid rgba(184,149,90,.2)}
+.vip-art-frame::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 55% 70% at 40% 55%,rgba(184,149,90,.18),transparent 65%)}
+.vip-art-frame::after{content:'';position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.7),transparent 60%)}
+.vip-inner-art{position:absolute;inset:0;display:flex;align-items:flex-end;justify-content:center;padding:28px}
+.vip-chair-row{display:flex;gap:14px}
+.vip-chair{width:42px;height:56px;position:relative}
+.vip-chair::before{content:'';position:absolute;bottom:0;left:4px;right:4px;height:34px;background:rgba(184,149,90,.3);border-radius:3px 3px 0 0;border:1px solid rgba(184,149,90,.4)}
+.vip-chair::after{content:'';position:absolute;top:4px;left:7px;right:7px;height:22px;background:rgba(184,149,90,.15);border-radius:2px;border:1px solid rgba(184,149,90,.25)}
+.vip-art-badge{position:absolute;top:20px;right:20px;border:1px solid var(--gold);padding:10px 16px;z-index:2}
+.vip-art-badge-text{font-size:8px;letter-spacing:.35em;text-transform:uppercase;color:var(--gold);font-weight:300}
+.vc{position:absolute;width:20px;height:20px}
+.vc::before{content:'';position:absolute;background:var(--gold);width:100%;height:1px;top:0;left:0;opacity:.6}
+.vc::after{content:'';position:absolute;background:var(--gold);width:1px;height:100%;top:0;left:0;opacity:.6}
+.vc.tl{top:10px;left:10px}.vc.tr{top:10px;right:10px;transform:scaleX(-1)}
+.vc.bl{bottom:10px;left:10px;transform:scaleY(-1)}.vc.br{bottom:10px;right:10px;transform:scale(-1)}
+.vip-headline{font-family:'Bebas Neue',sans-serif;font-size:clamp(44px,6vw,86px);line-height:.88;letter-spacing:.07em;
+  background:linear-gradient(180deg,#f5efe6,#9a8a72);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:22px}
+.vip-tagline{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:20px;color:var(--gold-l);margin-bottom:18px;font-weight:300}
+.vip-copy{font-family:'Cormorant Garamond',serif;font-weight:300;font-size:17px;line-height:1.8;color:var(--tm);margin-bottom:36px}
+.perks-list{display:flex;flex-direction:column;margin-bottom:36px}
+.perk{display:flex;align-items:flex-start;gap:18px;padding:18px 0;border-bottom:1px solid rgba(184,149,90,.1)}
+.perk:first-child{border-top:1px solid rgba(184,149,90,.1)}
+.perk-num{font-family:'Bebas Neue',sans-serif;font-size:30px;color:var(--gold-dim);letter-spacing:.05em;line-height:1;flex-shrink:0;width:34px}
+.perk-title{font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--cream);font-weight:300;margin-bottom:4px}
+.perk-desc{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:14px;color:var(--td)}
+.vip-cta-row{display:flex;gap:14px;flex-wrap:wrap}
+
+/* ═══════ LOCATIONS ═══════ */
+#locations{padding:140px 72px;background:linear-gradient(180deg,var(--char) 0%,var(--black) 100%);position:relative}
+@media(max-width:768px){#locations{padding:90px 28px}}
+.loc-header{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:56px;flex-wrap:wrap;gap:16px}
+.loc-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(44px,7vw,94px);line-height:.9;letter-spacing:.07em;
+  background:linear-gradient(135deg,#f5efe6,#b8955a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.locations-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px}
+@media(max-width:900px){.locations-grid{grid-template-columns:1fr}}
+.loc-card{position:relative;cursor:none;overflow:hidden;background:var(--char)}
+.loc-card-art{aspect-ratio:4/3;position:relative;overflow:hidden}
+.loc-bg{position:absolute;inset:0;transition:transform .7s cubic-bezier(.23,1,.32,1)}
+.loc-card:hover .loc-bg{transform:scale(1.07)}
+.lb1{background:radial-gradient(ellipse 60% 70% at 35% 55%,rgba(180,140,60,.3),transparent 65%),linear-gradient(145deg,#14100a,#1e160a,#0c0b08)}
+.lb2{background:radial-gradient(ellipse 55% 65% at 65% 40%,rgba(80,110,170,.35),transparent 60%),linear-gradient(165deg,#080d14,#10161e,#080a0c)}
+.lb3{background:radial-gradient(ellipse 65% 60% at 45% 60%,rgba(120,50,30,.4),transparent 65%),linear-gradient(150deg,#100907,#1a0e0a,#090807)}
+.loc-bg::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 50% 60% at 70% 30%,rgba(255,255,255,.06),transparent 55%)}
+.loc-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.88),rgba(0,0,0,.3) 50%,transparent)}
+.loc-city{position:absolute;bottom:18px;left:20px;font-family:'Bebas Neue',sans-serif;font-size:30px;letter-spacing:.1em;color:var(--cream);line-height:1}
+.loc-city-sub{font-size:8px;letter-spacing:.4em;text-transform:uppercase;color:var(--gold);font-weight:200;margin-top:2px}
+.loc-info{padding:22px 20px;background:var(--char);border-top:1px solid rgba(184,149,90,.12)}
+.loc-amenities{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:14px}
+.amenity{font-size:7px;letter-spacing:.3em;text-transform:uppercase;color:var(--td);border:1px solid rgba(184,149,90,.2);padding:4px 9px;font-weight:200}
+.loc-screens{display:flex;justify-content:space-between;align-items:center}
+.loc-screen-count{font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--gold);letter-spacing:.06em}
+.loc-screen-lbl{font-size:8px;letter-spacing:.3em;text-transform:uppercase;color:var(--td);font-weight:200}
+.loc-dir-link{font-size:8px;letter-spacing:.35em;text-transform:uppercase;color:var(--gold);cursor:none;display:flex;align-items:center;gap:8px;font-weight:300}
+.loc-dir-link::before{content:'';width:14px;height:1px;background:var(--gold)}
+
+/* ═══════ AWARDS ═══════ */
+#awards{padding:140px 72px;background:var(--black);position:relative;overflow:hidden}
+@media(max-width:768px){#awards{padding:90px 28px}}
+.awards-glow{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:600px;height:400px;background:radial-gradient(ellipse,rgba(184,149,90,.06),transparent 70%);pointer-events:none}
+.awards-header{text-align:center;margin-bottom:72px}
+.awards-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(46px,8vw,108px);line-height:.88;letter-spacing:.07em;
+  background:linear-gradient(180deg,#f5efe6,#9a8a72);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.awards-sub{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:17px;color:var(--td);margin-top:12px}
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;margin-bottom:72px}
+@media(max-width:900px){.stats-row{grid-template-columns:repeat(2,1fr)}}
+.stat-box{background:rgba(184,149,90,.04);border:1px solid rgba(184,149,90,.1);padding:28px 20px;text-align:center;cursor:none;transition:background .3s,border-color .3s;position:relative;overflow:hidden}
+.stat-box:hover{background:rgba(184,149,90,.08);border-color:rgba(184,149,90,.28)}
+.stat-box::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(to right,transparent,var(--gold),transparent);opacity:0;transition:opacity .3s}
+.stat-box:hover::before{opacity:1}
+.stat-number{font-family:'Bebas Neue',sans-serif;font-size:52px;letter-spacing:.04em;
+  background:linear-gradient(180deg,var(--gold-l),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;margin-bottom:6px}
+.stat-label{font-size:9px;letter-spacing:.4em;text-transform:uppercase;color:var(--td);font-weight:200}
+.awards-wall{display:grid;grid-template-columns:repeat(3,1fr);gap:2px}
+@media(max-width:900px){.awards-wall{grid-template-columns:1fr}}
+.award-tile{background:rgba(184,149,90,.03);border:1px solid rgba(184,149,90,.1);padding:28px 24px;
+  cursor:none;transition:background .4s,border-color .4s,transform .3s;position:relative;overflow:hidden}
+.award-tile:hover{background:rgba(184,149,90,.07);border-color:rgba(184,149,90,.3);transform:translateY(-3px)}
+.award-tile::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(to right,transparent,var(--gold-dim),transparent);transform:scaleX(0);transition:transform .4s}
+.award-tile:hover::after{transform:scaleX(1)}
+.award-year{font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:.15em;color:var(--gold-dim);margin-bottom:9px}
+.award-org{font-size:8px;letter-spacing:.45em;text-transform:uppercase;color:var(--gold);font-weight:200;margin-bottom:9px}
+.award-name{font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:600;color:var(--cream);margin-bottom:7px;line-height:1.25}
+.award-category{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:13px;color:var(--td)}
+.award-icon{position:absolute;top:22px;right:22px;font-size:20px;opacity:.3}
+
+/* ═══════ FOOTER CTA ═══════ */
+#footer-cta{padding:150px 72px 130px;background:var(--char);position:relative;overflow:hidden;text-align:center}
+@media(max-width:768px){#footer-cta{padding:90px 28px}}
+.fcta-glow{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:600px;height:400px;background:radial-gradient(ellipse,rgba(184,149,90,.07),transparent 70%);pointer-events:none}
+.fcta-streak{position:absolute;top:-30%;left:48%;width:1px;height:160%;background:linear-gradient(to bottom,transparent,rgba(184,149,90,.1) 45%,rgba(212,175,122,.18) 50%,rgba(184,149,90,.1) 55%,transparent);transform:rotate(8deg)}
+.fcta-streak::before{content:'';position:absolute;top:0;left:-32px;width:64px;height:100%;background:inherit;filter:blur(20px)}
+.fcta-content{position:relative;z-index:2;max-width:680px;margin:0 auto}
+.fcta-eyebrow{font-size:8px;letter-spacing:.55em;text-transform:uppercase;color:var(--gold);font-weight:200;margin-bottom:22px}
+.fcta-headline{font-family:'Bebas Neue',sans-serif;font-size:clamp(52px,10vw,126px);letter-spacing:.06em;line-height:.86;
+  background:linear-gradient(180deg,#f5efe6,#8a7a62);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:24px}
+.fcta-copy{font-family:'Cormorant Garamond',serif;font-weight:300;font-size:17px;color:var(--td);line-height:1.75;margin-bottom:44px}
+.fcta-btns{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+.fcta-rule{width:56px;height:1px;background:var(--gold-dim);margin:44px auto 0}
+footer{background:var(--black);padding:24px 72px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid rgba(184,149,90,.12);flex-wrap:wrap;gap:14px}
+@media(max-width:768px){footer{padding:24px 28px;flex-direction:column;text-align:center;gap:16px}}
+.footer-logo{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:.18em;background:linear-gradient(135deg,#c9b99a,#8a6e3e);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.footer-links{display:flex;gap:24px;flex-wrap:wrap;justify-content:center}
+.footer-link{font-size:8px;letter-spacing:.3em;text-transform:uppercase;color:var(--td);font-weight:200;cursor:none;transition:color .3s;text-decoration:none}
+.footer-link:hover{color:var(--gold)}
+.footer-copy{font-size:8px;letter-spacing:.25em;color:rgba(184,149,90,.25);font-weight:200}
+@keyframes rise{to{opacity:1;transform:translateY(0)}}
+@keyframes fadein{to{opacity:1}}
+</style>
+</head>
+<body>
+
+<canvas id="trail-canvas"></canvas>
+<div id="cur"></div><div id="cur-ring"></div>
+<div class="grain"></div>
+<div class="vignette"></div>
+<div class="bar-top"></div><div class="bar-bottom"></div>
+<div class="corner tl"></div><div class="corner tr"></div>
+<div class="corner bl"></div><div class="corner br"></div>
+<div class="hud-l">FR 001 — 2.39:1</div>
+<div class="hud-r">LUMIÈRE CINEMAS</div>
+<div id="pgbar"></div>
+
+<!-- Mobile menu -->
+<div class="mobile-menu" id="mob-menu">
+  <a class="mob-link" href="#about" onclick="closeMob()">Our Story</a>
+  <a class="mob-link" href="#now-showing" onclick="closeMob()">Screenings</a>
+  <a class="mob-link" href="#seatmap" onclick="closeMob()">Book Seats</a>
+  <a class="mob-link" href="#dining" onclick="closeMob()">Dining</a>
+  <a class="mob-link" href="#vip" onclick="closeMob()">Director's Lounge</a>
+  <a class="mob-link" href="#locations" onclick="closeMob()">Locations</a>
+  <button class="mob-cta" onclick="closeMob()">Reserve Now</button>
+</div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">Lumière</div>
+  <div class="nav-links">
+    <a class="nav-link" href="#about">Our Story</a>
+    <a class="nav-link" href="#now-showing">Screenings</a>
+    <a class="nav-link" href="#seatmap">Book Seats</a>
+    <a class="nav-link" href="#dining">Dining</a>
+    <a class="nav-link" href="#vip">Director's Lounge</a>
+    <a class="nav-link" href="#locations">Locations</a>
+  </div>
+  <div class="nav-right">
+    <button class="nav-cta"><span>Reserve Now</span></button>
+    <button class="nav-burger" id="burger" onclick="toggleMob()">
+      <div class="burger-line"></div><div class="burger-line"></div><div class="burger-line"></div>
+    </button>
+  </div>
+</nav>
+
+<!-- ═══ HERO ═══ -->
+<section id="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-streak"></div>
+  <div class="particles" id="particles"></div>
+  <div class="hero-content">
+    <p class="h-eyebrow">Premium Cinema Since 1994</p>
+    <h1 class="h-wordmark">Lumière</h1>
+    <p class="h-sub">Cinema is not merely entertainment — it is the architecture of emotion.</p>
+    <div class="h-rule" id="h-rule"></div>
+    <div class="h-meta">
+      <span>15 Screens</span><i></i>
+      <span>Dolby Atmos</span><i></i>
+      <span>4K Laser</span><i></i>
+      <span>Director's Lounge</span>
+    </div>
+    <div class="h-btns">
+      <button class="btn-g" onclick="goto('now-showing')"><span>Now Showing</span></button>
+      <button class="btn-o" onclick="goto('about')">Our Story</button>
+    </div>
+  </div>
+  <div class="scroll-hint"><div class="scroll-line"></div><span class="scroll-lbl">Explore</span></div>
+</section>
+<div class="gold-rule"></div>
+
+<!-- ═══ ABOUT ═══ -->
+<section id="about">
+  <div class="about-layout">
+    <div class="about-left">
+      <p class="sec-label reveal">Our Story</p>
+      <h2 class="about-headline reveal rd1">Thirty<br>Years of<br>Cinema</h2>
+      <p class="about-pull reveal rd2">"We did not open a theatre. We built a sanctuary for those who believe a great film can change who you are."</p>
+      <p class="about-body reveal rd3">In 1994, founder Vikram Nair opened the first Lumière auditorium in Bandra with a single conviction: that Indian audiences deserved to experience cinema the way its creators imagined it — with perfect light, perfect sound, and perfect silence around them.</p>
+      <p class="about-body reveal rd3">Three decades, three cities, and fifteen screens later, that conviction remains unchanged. Every seat, every speaker, every dimming of lights is an act of devotion to the art of film.</p>
+      <div class="about-sig reveal rd4"><span class="about-sig-line"></span><span class="about-sig-text">— Vikram Nair, Founder & Chairman</span></div>
+    </div>
+    <div>
+      <p class="sec-label reveal rd1">Our Journey</p>
+      <div class="about-timeline">
+        <div class="tl-item reveal rd1"><span class="tl-year">1994</span><div class="tl-content"><p class="tl-title">The First Curtain Rise</p><p class="tl-desc">Lumière Bandra opens with two screens — Mumbai's first dedicated art-house cinema.</p></div></div>
+        <div class="tl-item reveal rd2"><span class="tl-year">2001</span><div class="tl-content"><p class="tl-title">Sound Reimagined</p><p class="tl-desc">First cinema in India to install full Dolby Digital EX surround across all halls.</p></div></div>
+        <div class="tl-item reveal rd3"><span class="tl-year">2009</span><div class="tl-content"><p class="tl-title">Delhi & the Grand Expansion</p><p class="tl-desc">Connaught Place flagship opens — six screens, the Director's Lounge, and fine dining.</p></div></div>
+        <div class="tl-item reveal rd4"><span class="tl-year">2018</span><div class="tl-content"><p class="tl-title">The IMAX Era</p><p class="tl-desc">First independent cinema in South Asia to secure an IMAX with Laser installation.</p></div></div>
+        <div class="tl-item reveal rd5"><span class="tl-year">2024</span><div class="tl-content"><p class="tl-title">Hyderabad & the Future</p><p class="tl-desc">Third city. D-Box motion seating. Dolby Vision. A spa. The most complete cinema experience in India.</p></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+<div class="gold-rule"></div>
+
+<!-- ═══ NOW SHOWING ═══ -->
+<section id="now-showing">
+  <div class="ns-head">
+    <div class="reveal"><p class="sec-label">On Screen Now</p><h2 class="ns-title">Now<br>Showing</h2></div>
+    <p class="ns-date reveal rd2">Week of March 6 – 12, 2026</p>
+  </div>
+  <div class="screen-tabs reveal rd1">
+    <button class="stab active">All Films</button>
+    <button class="stab">Premieres</button>
+    <button class="stab">Director's Cut</button>
+    <button class="stab">Coming Soon</button>
+  </div>
+  <div class="films-grid">
+    <div class="film-card reveal rd1">
+      <div class="film-poster"><div class="film-poster-art pa1"></div><span class="film-format">Dolby Atmos</span><span class="film-rating-badge">A</span><div class="film-overlay"><button class="film-book-btn" onclick="goto('seatmap')">Book Seats</button></div></div>
+      <div class="film-info"><p class="film-genre">Drama · Romance</p><h3 class="film-title">The Gilded Hours</h3><p class="film-duration">2h 24min &nbsp;·&nbsp; Élise Moreau</p><div class="film-times"><span class="film-time">11:30</span><span class="film-time">14:45</span><span class="film-time">18:15</span><span class="film-time">21:30</span></div></div>
+    </div>
+    <div class="film-card reveal rd2">
+      <div class="film-poster"><div class="film-poster-art pa2"></div><span class="film-format">IMAX 4K</span><span class="film-rating-badge">UA</span><div class="film-overlay"><button class="film-book-btn" onclick="goto('seatmap')">Book Seats</button></div></div>
+      <div class="film-info"><p class="film-genre">Sci-Fi · Thriller</p><h3 class="film-title">Void Between Stars</h3><p class="film-duration">2h 51min &nbsp;·&nbsp; Kenji Tanaka</p><div class="film-times"><span class="film-time">10:00</span><span class="film-time">13:30</span><span class="film-time">17:00</span><span class="film-time">20:45</span></div></div>
+    </div>
+    <div class="film-card reveal rd3">
+      <div class="film-poster"><div class="film-poster-art pa3"></div><span class="film-format">4K Laser</span><span class="film-rating-badge">A</span><div class="film-overlay"><button class="film-book-btn" onclick="goto('seatmap')">Book Seats</button></div></div>
+      <div class="film-info"><p class="film-genre">Historical · War</p><h3 class="film-title">Crimson Meridian</h3><p class="film-duration">2h 38min &nbsp;·&nbsp; Arjun Mehta</p><div class="film-times"><span class="film-time">12:15</span><span class="film-time">15:30</span><span class="film-time">19:00</span><span class="film-time">22:15</span></div></div>
+    </div>
+    <div class="film-card reveal rd4">
+      <div class="film-poster"><div class="film-poster-art pa4"></div><span class="film-format">Dolby Vision</span><span class="film-rating-badge">U</span><div class="film-overlay"><button class="film-book-btn" onclick="goto('seatmap')">Book Seats</button></div></div>
+      <div class="film-info"><p class="film-genre">Nature · Documentary</p><h3 class="film-title">The Silent Ocean</h3><p class="film-duration">1h 52min &nbsp;·&nbsp; Priya Nair</p><div class="film-times"><span class="film-time">10:30</span><span class="film-time">13:00</span><span class="film-time">16:30</span><span class="film-time">19:45</span></div></div>
+    </div>
+  </div>
+</section>
+<div class="gold-rule"></div>
+
+<!-- ═══ SEAT MAP ═══ -->
+<section id="seatmap">
+  <div class="seatmap-layout">
+    <div class="seatmap-left">
+      <p class="sec-label reveal">Choose Your Seat</p>
+      <h2 class="seatmap-title reveal rd1">Reserve<br>Your Place</h2>
+      <p class="seatmap-sub reveal rd2">Click any available seat to select. Gold seats are Director's Lounge recliners.</p>
+      <div class="reveal rd2">
+        <div class="screen-wrap">
+          <span class="screen-label-top">Screen · Grand Auditorium</span>
+          <div class="screen-bar"></div>
+          <div class="screen-bar-glow"></div>
+        </div>
+        <div class="seat-map-grid" id="seat-grid"></div>
+        <div class="seat-legend">
+          <div class="legend-item"><div class="legend-dot ld-avail"></div>Available</div>
+          <div class="legend-item"><div class="legend-dot ld-vip"></div>Director's</div>
+          <div class="legend-item"><div class="legend-dot ld-taken"></div>Taken</div>
+          <div class="legend-item"><div class="legend-dot ld-selected"></div>Selected</div>
+        </div>
+      </div>
+    </div>
+    <div class="seatmap-panel reveal rd3">
+      <p class="panel-title">Booking Summary</p>
+      <div class="panel-film">
+        <p class="panel-film-title">The Gilded Hours</p>
+        <p class="panel-film-meta">Grand Auditorium · Dolby Atmos · Today</p>
+      </div>
+      <div class="panel-showtime">
+        <span class="pst active">18:15</span>
+        <span class="pst">21:30</span>
+        <span class="pst">14:45</span>
+      </div>
+      <div class="panel-selected">
+        <p class="ps-label">Selected Seats</p>
+        <div class="ps-seats" id="selected-display"><span class="ps-empty">No seats selected</span></div>
+      </div>
+      <div class="panel-price">
+        <span class="price-label">Total</span>
+        <span class="price-val" id="price-display">₹ 0</span>
+      </div>
+      <button class="panel-btn"><span>Confirm Booking</span></button>
+    </div>
+  </div>
+</section>
+<div class="gold-rule"></div>
+
+<!-- ═══ EXPERIENCE ═══ -->
+<section id="experience">
+  <div class="exp-layout">
+    <div>
+      <p class="sec-label reveal">The Technology</p>
+      <h2 class="exp-headline reveal rd1">Engineered<br>for<br>Perfection</h2>
+      <p class="exp-copy reveal rd2">Every seat in a Lumière auditorium is a <em>front-row seat to the impossible</em>. Our investment in world-class projection and sound ensures the director's vision reaches you uncompromised.</p>
+      <div class="specs-list reveal rd3">
+        <div class="spec-row"><div class="spec-icon">◈</div><div class="spec-info"><p class="spec-name">Laser Projection</p><p class="spec-detail">Christie CP4450-RGB · 60,000 lumens · true 4K</p></div><span class="spec-badge">4K HDR</span></div>
+        <div class="spec-row"><div class="spec-icon">◉</div><div class="spec-info"><p class="spec-name">Dolby Atmos Sound</p><p class="spec-detail">64-channel immersive audio · overhead speakers · 20,000W</p></div><span class="spec-badge">Certified</span></div>
+        <div class="spec-row"><div class="spec-icon">▣</div><div class="spec-info"><p class="spec-name">IMAX with Laser</p><p class="spec-detail">26m × 16m screen · 1.43:1 · dual 4K projection</p></div><span class="spec-badge">IMAX</span></div>
+        <div class="spec-row"><div class="spec-icon">◎</div><div class="spec-info"><p class="spec-name">D-Box Motion Seating</p><p class="spec-detail">Heated leather recliners · USB & wireless charging</p></div><span class="spec-badge">D-Box</span></div>
+        <div class="spec-row"><div class="spec-icon">◇</div><div class="spec-info"><p class="spec-name">Dolby Vision</p><p class="spec-detail">500 nits peak · 1,000,000:1 contrast · full DCI-P3</p></div><span class="spec-badge">HDR</span></div>
+      </div>
+    </div>
+    <div class="reveal rd2">
+      <div class="screen-art">
+        <div class="screen-inner"><div class="screen-beam"></div><span class="screen-lbl">Screen 01 — Grand Auditorium</span></div>
+        <div class="seats-art"></div>
+        <div class="seats-rows" id="exp-seats"></div>
+      </div>
+      <div class="screen-stats">
+        <div class="sstat"><div class="sstat-val">26M</div><div class="sstat-lbl">Screen Width</div></div>
+        <div class="sstat"><div class="sstat-val">450</div><div class="sstat-lbl">Seats per Hall</div></div>
+        <div class="sstat"><div class="sstat-val">64</div><div class="sstat-lbl">Audio Channels</div></div>
+        <div class="sstat"><div class="sstat-val">4K</div><div class="sstat-lbl">Resolution</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+<div class="gold-rule"></div>
+
+<!-- ═══ DINING ═══ -->
+<section id="dining">
+  <div class="dining-header">
+    <div class="reveal"><p class="sec-label">The Kitchen</p><h2 class="dining-title">Dine<br>Before<br>the Film</h2></div>
+    <p class="dining-sub reveal rd2">A culinary journey curated around the world of cinema.</p>
+  </div>
+  <div class="menu-tabs reveal rd1">
+    <button class="mtab active" data-menu="starters">Starters</button>
+    <button class="mtab" data-menu="mains">Main Course</button>
+    <button class="mtab" data-menu="desserts">Desserts</button>
+    <button class="mtab" data-menu="drinks">Cocktails & Wine</button>
+  </div>
+
+  <!-- Starters -->
+  <div class="menu-panel active" id="menu-starters">
+    <div class="menu-item menu-featured reveal rd1">
+      <span class="menu-featured-badge">Chef's Choice</span>
+      <div class="menu-item-header"><h3 class="menu-item-name">Seared Scallop & Saffron Bisque</h3><span class="menu-item-price">₹ 980</span></div>
+      <p class="menu-item-desc">Hand-dived scallops on a rich saffron and white wine bisque, finished with caviar cream and micro herbs.</p>
+      <div class="menu-item-tags"><span class="menu-tag">Seafood</span><span class="menu-tag">Gluten Free</span></div>
+    </div>
+    <div class="menu-item reveal rd2">
+      <div class="menu-item-header"><h3 class="menu-item-name">Truffle Arancini</h3><span class="menu-item-price">₹ 720</span></div>
+      <p class="menu-item-desc">Crisp risotto croquettes with black truffle and aged parmesan, served with a warm romesco dip.</p>
+      <div class="menu-item-tags"><span class="menu-tag">Vegetarian</span><span class="menu-tag">Signature</span></div>
+    </div>
+    <div class="menu-item reveal rd3">
+      <div class="menu-item-header"><h3 class="menu-item-name">Duck Liver Parfait</h3><span class="menu-item-price">₹ 840</span></div>
+      <p class="menu-item-desc">Silky duck liver parfait, port wine jelly, toasted brioche, and pickled pear compote.</p>
+      <div class="menu-item-tags"><span class="menu-tag">Poultry</span></div>
+    </div>
+    <div class="menu-item reveal rd4">
+      <div class="menu-item-header"><h3 class="menu-item-name">Burrata & Heritage Tomato</h3><span class="menu-item-price">₹ 680</span></div>
+      <p class="menu-item-desc">Imported burrata, heirloom tomatoes, aged balsamic, estate olive oil, and torn basil leaves.</p>
+      <div class="menu-item-tags"><span class="menu-tag">Vegetarian</span><span class="menu-tag">Gluten Free</span></div>
+    </div>
+  </div>
+
+  <!-- Mains -->
+  <div class="menu-panel" id="menu-mains">
+    <div class="menu-item menu-featured reveal rd1">
+      <span class="menu-featured-badge">Signature</span>
+      <div class="menu-item-header"><h3 class="menu-item-name">Wagyu Beef Tenderloin</h3><span class="menu-item-price">₹ 3,400</span></div>
+      <p class="menu-item-desc">Grade A5 Wagyu, slow-roasted to perfection, with truffle jus, fondant potato and seasonal greens.</p>
+      <div class="menu-item-tags"><span class="menu-tag">Beef</span><span class="menu-tag">Premium</span></div>
+    </div>
+    <div class="menu-item reveal rd2">
+      <div class="menu-item-header"><h3 class="menu-item-name">Pan-Seared Sea Bass</h3><span class="menu-item-price">₹ 1,850</span></div>
+      <p class="menu-item-desc">Line-caught sea bass, roasted fennel, saffron beurre blanc, samphire and preserved lemon.</p>
+      <div class="menu-item-tags"><span class="menu-tag">Seafood</span><span class="menu-tag">Gluten Free</span></div>
+    </div>
+    <div class="menu-item reveal rd3">
+      <div class="menu-item-header"><h3 class="menu-item-name">Wild Mushroom Risotto</h3><span class="menu-item-price">₹ 1,250</span></div>
+      <p class="menu-item-desc">Carnaroli rice, porcini, chanterelle, shaved black truffle, aged pecorino and chive oil.</p>
+      <div class="menu-item-tags"><span class="menu-tag">Vegetarian</span><span class="menu-tag">Signature</span></div>
+    </div>
+    <div class="menu-item reveal rd4">
+      <div class="menu-item-header"><h3 class="menu-item-name">Lamb Rack Provençal</h3><span class="menu-item-price">₹ 2,600</span></div>
+      <p class="menu-item-desc">Herb-crusted Rajasthani lamb rack, ratatouille, red wine reduction and rosemary jus.</p>
+      <div class="menu-item-tags"><span class="menu-tag">Lamb</span><span class="menu-tag">Chef's Pick</span></div>
+    </div>
+  </div>
+
+  <!-- Desserts -->
+  <div class="menu-panel" id="menu-desserts">
+    <div class="menu-item menu-featured reveal rd1">
+      <span class="menu-featured-badge">Iconic</span>
+      <div class="menu-item-header"><h3 class="menu-item-name">Gold Leaf Chocolate Sphere</h3><span class="menu-item-price">₹ 980</span></div>
+      <p class="menu-item-desc">A dark chocolate sphere melted tableside with warm caramel, revealing a mousse and praline heart within.</p>
+      <div class="menu-item-tags"><span class="menu-tag">Chocolate</span><span class="menu-tag">Tableside</span></div>
+    </div>
+    <div class="menu-item reveal rd2">
+      <div class="menu-item-header"><h3 class="menu-item-name">Champagne & Rose Panna Cotta</h3><span class="menu-item-price">₹ 680</span></div>
+      <p class="menu-item-desc">Delicate panna cotta infused with champagne and rose water, fresh strawberries and raspberry coulis.</p>
+      <div class="menu-item-tags"><span class="menu-tag">Vegetarian</span><span class="menu-tag">Gluten Free</span></div>
+    </div>
+    <div class="menu-item reveal rd3">
+      <div class="menu-item-header"><h3 class="menu-item-name">Soufflé au Grand Marnier</h3><span class="menu-item-price">₹ 820</span></div>
+      <p class="menu-item-desc">Classic French soufflé with Grand Marnier, served with a vanilla crème anglaise. 20 min prep — order with your main.</p>
+      <div class="menu-item-tags"><span class="menu-tag">Vegetarian</span><span class="menu-tag">Pre-Order</span></div>
+    </div>
+    <div class="menu-item reveal rd4">
+      <div class="menu-item-header"><h3 class="menu-item-name">Mango & Cardamom Tart</h3><span class="menu-item-price">₹ 620</span></div>
+      <p class="menu-item-desc">Alphonso mango curd in a cardamom shortcrust, topped with fresh mango gel and saffron cream.</p>
+      <div class="menu-item-tags"><span class="menu-tag">Seasonal</span><span class="menu-tag">Indian Inspired</span></div>
+    </div>
+  </div>
+
+  <!-- Drinks -->
+  <div class="menu-panel" id="menu-drinks">
+    <div class="menu-item menu-featured reveal rd1">
+      <span class="menu-featured-badge">Signature</span>
+      <div class="menu-item-header"><h3 class="menu-item-name">The Golden Reel</h3><span class="menu-item-price">₹ 1,200</span></div>
+      <p class="menu-item-desc">Gold-flecked Champagne with elderflower, yuzu bitters and a frozen rose petal — our house cocktail.</p>
+      <div class="menu-item-tags"><span class="menu-tag">Cocktail</span><span class="menu-tag">Signature</span></div>
+    </div>
+    <div class="menu-item reveal rd2">
+      <div class="menu-item-header"><h3 class="menu-item-name">Château Margaux 2018</h3><span class="menu-item-price">₹ 18,500</span></div>
+      <p class="menu-item-desc">A masterful Bordeaux from a celebrated vintage. Decanted to order. Serves 2–3 guests.</p>
+      <div class="menu-item-tags"><span class="menu-tag">Red Wine</span><span class="menu-tag">Fine Wine</span></div>
+    </div>
+    <div class="menu-item reveal rd3">
+      <div class="menu-item-header"><h3 class="menu-item-name">Noir Negroni</h3><span class="menu-item-price">₹ 980</span></div>
+      <p class="menu-item-desc">Black fig-infused gin, Campari, sweet vermouth, burnt orange peel. Dark, complex and unforgettable.</p>
+      <div class="menu-item-tags"><span class="menu-tag">Cocktail</span><span class="menu-tag">Stirred</span></div>
+    </div>
+    <div class="menu-item reveal rd4">
+      <div class="menu-item-header"><h3 class="menu-item-name">Ruinart Blanc de Blancs</h3><span class="menu-item-price">₹ 9,800</span></div>
+      <p class="menu-item-desc">The world's oldest Champagne house. Crisp, mineral, with notes of white peach and almond.</p>
+      <div class="menu-item-tags"><span class="menu-tag">Champagne</span><span class="menu-tag">Celebration</span></div>
+    </div>
+  </div>
+
+  <div class="dining-ambience reveal rd2">
+    <div class="amb-card"><div class="amb-art aa1"></div><span class="amb-label">The Main Room</span></div>
+    <div class="amb-card"><div class="amb-art aa2"></div><span class="amb-label">Private Dining</span></div>
+    <div class="amb-card"><div class="amb-art aa3"></div><span class="amb-label">The Bar</span></div>
+  </div>
+</section>
+<div class="gold-rule"></div>
+
+<!-- ═══ VIP ═══ -->
+<section id="vip">
+  <div class="vip-layout">
+    <div class="vip-art reveal">
+      <div class="vip-art-frame">
+        <div class="vip-inner-art"><div class="vip-chair-row"><div class="vip-chair"></div><div class="vip-chair"></div><div class="vip-chair"></div></div></div>
+        <div class="vip-art-badge"><p class="vip-art-badge-text">By Invitation Only</p></div>
+        <div class="vc tl"></div><div class="vc tr"></div><div class="vc bl"></div><div class="vc br"></div>
+      </div>
+    </div>
+    <div>
+      <p class="sec-label reveal">Exclusive Access</p>
+      <h2 class="vip-headline reveal rd1">Director's<br>Lounge</h2>
+      <p class="vip-tagline reveal rd2">"Where the film never truly ends."</p>
+      <p class="vip-copy reveal rd3">Reserved for our most discerning guests. Private screenings, curated menus, sommelier-selected wines, and a personal concierge — every detail orchestrated to perfection.</p>
+      <div class="perks-list reveal rd3">
+        <div class="perk"><span class="perk-num">01</span><div><p class="perk-title">Private Screening Rooms</p><p class="perk-desc">Intimate 28-seat halls for corporate events, premieres, or a personal evening with cinema.</p></div></div>
+        <div class="perk"><span class="perk-num">02</span><div><p class="perk-title">Chef's Pre-Show Dining</p><p class="perk-desc">A curated five-course menu served at your seat, designed around the film's origin country.</p></div></div>
+        <div class="perk"><span class="perk-num">03</span><div><p class="perk-title">Dedicated Concierge</p><p class="perk-desc">A personal host for all reservations, F&B, seating and post-screening arrangements.</p></div></div>
+        <div class="perk"><span class="perk-num">04</span><div><p class="perk-title">Annual Film Passport</p><p class="perk-desc">Unlimited standard screenings, priority booking, and exclusive member previews year-round.</p></div></div>
+      </div>
+      <div class="vip-cta-row reveal rd4">
+        <button class="btn-g"><span>Apply for Membership</span></button>
+        <button class="btn-o">Learn More</button>
+      </div>
+    </div>
+  </div>
+</section>
+<div class="gold-rule"></div>
+
+<!-- ═══ LOCATIONS ═══ -->
+<section id="locations">
+  <div class="loc-header">
+    <div class="reveal"><p class="sec-label">Find Us</p><h2 class="loc-title">Our<br>Theatres</h2></div>
+    <p style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:16px;color:var(--td);padding-bottom:8px" class="reveal rd2">Three cities. One uncompromising standard.</p>
+  </div>
+  <div class="locations-grid">
+    <div class="loc-card reveal rd1"><div class="loc-card-art"><div class="loc-bg lb1"></div><div class="loc-overlay"></div><div class="loc-city">Mumbai<div class="loc-city-sub">Bandra West</div></div></div><div class="loc-info"><div class="loc-amenities"><span class="amenity">IMAX</span><span class="amenity">Dolby Atmos</span><span class="amenity">D-Box</span><span class="amenity">Fine Dining</span><span class="amenity">Valet</span></div><div class="loc-screens"><div><div class="loc-screen-count">06</div><div class="loc-screen-lbl">Screens</div></div><span class="loc-dir-link">Directions</span></div></div></div>
+    <div class="loc-card reveal rd2"><div class="loc-card-art"><div class="loc-bg lb2"></div><div class="loc-overlay"></div><div class="loc-city">Delhi<div class="loc-city-sub">Connaught Place</div></div></div><div class="loc-info"><div class="loc-amenities"><span class="amenity">4K Laser</span><span class="amenity">Dolby Vision</span><span class="amenity">Lounge</span><span class="amenity">Bar</span><span class="amenity">Parking</span></div><div class="loc-screens"><div><div class="loc-screen-count">04</div><div class="loc-screen-lbl">Screens</div></div><span class="loc-dir-link">Directions</span></div></div></div>
+    <div class="loc-card reveal rd3"><div class="loc-card-art"><div class="loc-bg lb3"></div><div class="loc-overlay"></div><div class="loc-city">Hyderabad<div class="loc-city-sub">Jubilee Hills</div></div></div><div class="loc-info"><div class="loc-amenities"><span class="amenity">IMAX</span><span class="amenity">4K HDR</span><span class="amenity">Director's Lounge</span><span class="amenity">Spa</span></div><div class="loc-screens"><div><div class="loc-screen-count">05</div><div class="loc-screen-lbl">Screens</div></div><span class="loc-dir-link">Directions</span></div></div></div>
+  </div>
+</section>
+<div class="gold-rule"></div>
+
+<!-- ═══ AWARDS ═══ -->
+<section id="awards">
+  <div class="awards-glow"></div>
+  <div class="awards-header reveal">
+    <p style="font-size:8px;letter-spacing:.55em;text-transform:uppercase;color:var(--gold);font-weight:200;margin-bottom:14px">Recognition</p>
+    <h2 class="awards-title">Honoured<br>by the Best</h2>
+    <p class="awards-sub">Thirty years of excellence, acknowledged by the world's foremost institutions of cinema.</p>
+  </div>
+  <div class="stats-row">
+    <div class="stat-box reveal rd1"><div class="stat-number" data-target="47">0</div><div class="stat-label">Industry Awards</div></div>
+    <div class="stat-box reveal rd2"><div class="stat-number" data-target="30">0</div><div class="stat-label">Years of Excellence</div></div>
+    <div class="stat-box reveal rd3"><div class="stat-number" data-target="2">0</div><div class="stat-label">Million Guests Annually</div></div>
+    <div class="stat-box reveal rd4"><div class="stat-number" data-target="15">0</div><div class="stat-label">Screens Nationwide</div></div>
+  </div>
+  <div class="awards-wall">
+    <div class="award-tile reveal rd1"><div class="award-year">2025</div><p class="award-org">FICCI Frames</p><h3 class="award-name">Best Premium Exhibition Chain</h3><p class="award-category">Cinema Experience · National</p><span class="award-icon">◆</span></div>
+    <div class="award-tile reveal rd2"><div class="award-year">2024</div><p class="award-org">Dolby Laboratories</p><h3 class="award-name">Dolby Vision & Atmos Pioneer Award</h3><p class="award-category">Technology Excellence · Asia Pacific</p><span class="award-icon">◆</span></div>
+    <div class="award-tile reveal rd3"><div class="award-year">2024</div><p class="award-org">Condé Nast Traveller India</p><h3 class="award-name">Best Luxury Leisure Experience</h3><p class="award-category">Hospitality & Design</p><span class="award-icon">◆</span></div>
+    <div class="award-tile reveal rd1"><div class="award-year">2023</div><p class="award-org">IMAX Corporation</p><h3 class="award-name">Outstanding IMAX Partner of the Year</h3><p class="award-category">Global Exhibition Network</p><span class="award-icon">◆</span></div>
+    <div class="award-tile reveal rd2"><div class="award-year">2022</div><p class="award-org">Cinema Expo International</p><h3 class="award-name">Excellence in Cinema Design</h3><p class="award-category">Architecture & Interiors · Amsterdam</p><span class="award-icon">◆</span></div>
+    <div class="award-tile reveal rd3"><div class="award-year">2021</div><p class="award-org">NFDC India</p><h3 class="award-name">Patron of Indian Cinema Award</h3><p class="award-category">Cultural Contribution · India</p><span class="award-icon">◆</span></div>
+  </div>
+</section>
+<div class="gold-rule"></div>
+
+<!-- ═══ FOOTER CTA ═══ -->
+<section id="footer-cta">
+  <div class="fcta-glow"></div><div class="fcta-streak"></div>
+  <div class="fcta-content">
+    <p class="fcta-eyebrow reveal">The Curtain Awaits</p>
+    <h2 class="fcta-headline reveal rd1">Your Seat<br>is Ready</h2>
+    <p class="fcta-copy reveal rd2">Every great film deserves to be seen as its director intended — on a screen that commands the room, in sound that surrounds the soul.</p>
+    <div class="fcta-btns reveal rd3">
+      <button class="btn-g"><span>Book Tickets Now</span></button>
+      <button class="btn-o">Explore Membership</button>
+    </div>
+    <div class="fcta-rule reveal rd4"></div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-logo">Lumière</div>
+  <div class="footer-links">
+    <a class="footer-link" href="#">Screenings</a>
+    <a class="footer-link" href="#">Dining</a>
+    <a class="footer-link" href="#">Membership</a>
+    <a class="footer-link" href="#">Private Hire</a>
+    <a class="footer-link" href="#">Press</a>
+    <a class="footer-link" href="#">Contact</a>
+  </div>
+  <p class="footer-copy">© 2026 Lumière Cinemas. All rights reserved.</p>
+</footer>
+
+<script>
+/* ── CURSOR ── */
+const cur=document.getElementById('cur'),ring=document.getElementById('cur-ring');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY});
+(function tick(){rx+=(mx-rx)*.12;ry+=(my-ry)*.12;
+  cur.style.left=mx+'px';cur.style.top=my+'px';
+  ring.style.left=rx+'px';ring.style.top=ry+'px';
+  requestAnimationFrame(tick)})();
+document.querySelectorAll('button,a,.film-card,.loc-card,.award-tile,.stat-box,.film-time,.seat,.pst,.menu-item,.stab,.mtab').forEach(el=>{
+  el.addEventListener('mouseenter',()=>ring.classList.add('big'));
+  el.addEventListener('mouseleave',()=>ring.classList.remove('big'));
+});
+
+/* ── LIGHT TRAIL ── */
+const cv=document.getElementById('trail-canvas'),ctx=cv.getContext('2d');
+function resizeCv(){cv.width=window.innerWidth;cv.height=window.innerHeight}
+resizeCv();window.addEventListener('resize',resizeCv);
+const pts=[];
+document.addEventListener('mousemove',e=>{pts.push({x:e.clientX,y:e.clientY,age:0,alpha:1});if(pts.length>70)pts.shift()});
+(function drawTrail(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  for(let i=1;i<pts.length;i++){
+    const p=pts[i],pp=pts[i-1];p.age+=.025;p.alpha=Math.max(0,1-p.age);
+    const t=i/pts.length;ctx.beginPath();ctx.moveTo(pp.x,pp.y);ctx.lineTo(p.x,p.y);
+    ctx.strokeStyle=`rgba(184,149,90,${p.alpha*t*.28})`;ctx.lineWidth=t*2;ctx.lineCap='round';ctx.stroke();
+  }
+  for(let i=pts.length-1;i>=0;i--)if(pts[i].alpha<=0)pts.splice(i,1);
+  requestAnimationFrame(drawTrail)})();
+
+/* ── PARTICLES ── */
+const pc=document.getElementById('particles');
+for(let i=0;i<24;i++){const p=document.createElement('div');p.className='particle';
+  p.style.left=Math.random()*100+'%';const s=(Math.random()*1.5+.5)+'px';
+  p.style.width=s;p.style.height=s;
+  p.style.animationDuration=(Math.random()*12+8)+'s';
+  p.style.animationDelay=(Math.random()*8)+'s';pc.appendChild(p)}
+
+/* ── HERO RULE ── */
+setTimeout(()=>document.getElementById('h-rule').classList.add('open'),1900);
+
+/* ── EXP SEATS ── */
+const sr=document.getElementById('exp-seats');
+for(let r=0;r<5;r++){const row=document.createElement('div');row.className='seats-row';
+  const seats=8+r*2;for(let s=0;s<seats;s++){const d=document.createElement('div');
+    d.className='seat-dot'+(Math.random()>.55?' on':'');row.appendChild(d)}sr.appendChild(row)}
+
+/* ── PROGRESS ── */
+window.addEventListener('scroll',()=>{
+  const pct=(window.scrollY/(document.documentElement.scrollHeight-window.innerHeight))*100;
+  document.getElementById('pgbar').style.width=pct+'%'});
+
+/* ── REVEAL ── */
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')})},{threshold:.08});
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+
+/* ── SMOOTH SCROLL ── */
+function goto(id){document.getElementById(id)?.scrollIntoView({behavior:'smooth'})}
+document.querySelectorAll('a[href^="#"]').forEach(a=>{
+  a.addEventListener('click',e=>{e.preventDefault();const t=document.querySelector(a.getAttribute('href'));if(t)t.scrollIntoView({behavior:'smooth'})})});
+
+/* ── TABS ── */
+document.querySelectorAll('.stab').forEach(t=>{
+  t.addEventListener('click',()=>{document.querySelectorAll('.stab').forEach(x=>x.classList.remove('active'));t.classList.add('active')})});
+document.querySelectorAll('.mtab').forEach(t=>{
+  t.addEventListener('click',()=>{
+    document.querySelectorAll('.mtab').forEach(x=>x.classList.remove('active'));
+    t.classList.add('active');
+    const key=t.dataset.menu;
+    document.querySelectorAll('.menu-panel').forEach(p=>{p.classList.remove('active');p.style.display='none'});
+    const panel=document.getElementById('menu-'+key);
+    if(panel){panel.classList.add('active');panel.style.display='grid';
+      setTimeout(()=>panel.querySelectorAll('.reveal').forEach(el=>el.classList.add('visible')),50)}
+  })});
+document.querySelectorAll('.pst').forEach(t=>{
+  t.addEventListener('click',()=>{document.querySelectorAll('.pst').forEach(x=>x.classList.remove('active'));t.classList.add('active')})});
+
+/* ── MOBILE MENU ── */
+function toggleMob(){
+  const m=document.getElementById('mob-menu'),b=document.getElementById('burger');
+  m.classList.toggle('open');b.classList.toggle('open')}
+function closeMob(){
+  document.getElementById('mob-menu').classList.remove('open');
+  document.getElementById('burger').classList.remove('open')}
+
+/* ── SEAT MAP ── */
+const ROWS=['A','B','C','D','E','F','G','H','J','K'];
+const VIP_ROWS=['J','K'];
+const PRICES={vip:1800,standard:950};
+let selected=new Set();
+const grid=document.getElementById('seat-grid');
+
+ROWS.forEach(r=>{
+  const wrap=document.createElement('div');wrap.className='seat-row-wrap';
+  const lbl=document.createElement('span');lbl.className='row-label';lbl.textContent=r;
+  wrap.appendChild(lbl);
+  const row=document.createElement('div');row.className='seat-row';
+  const isVip=VIP_ROWS.includes(r);
+  const total=isVip?12:16;
+  for(let s=1;s<=total;s++){
+    if(s===Math.ceil(total/2)+1){const g=document.createElement('div');g.className='seat-gap';row.appendChild(g)}
+    const seat=document.createElement('div');
+    seat.className='seat '+(isVip?'vip-seat':'avail');
+    if(Math.random()<.3)seat.className='seat taken';
+    if(!seat.classList.contains('taken')){
+      seat.dataset.id=r+s;seat.dataset.price=isVip?PRICES.vip:PRICES.standard;
+      seat.addEventListener('click',()=>toggleSeat(seat));
+    }
+    row.appendChild(seat);
+  }
+  wrap.appendChild(row);grid.appendChild(wrap);
+});
+
+function toggleSeat(seat){
+  const id=seat.dataset.id;
+  if(selected.has(id)){selected.delete(id);seat.classList.remove('selected');
+    if(VIP_ROWS.includes(id[0]))seat.classList.add('vip-seat');else seat.classList.add('avail');
+  }else{selected.add(id);seat.classList.remove('avail','vip-seat');seat.classList.add('selected')}
+  updatePanel();
+}
+
+function updatePanel(){
+  const disp=document.getElementById('selected-display');
+  const priceEl=document.getElementById('price-display');
+  if(selected.size===0){disp.innerHTML='<span class="ps-empty">No seats selected</span>';priceEl.textContent='₹ 0';return}
+  let total=0;disp.innerHTML='';
+  selected.forEach(id=>{
+    const seat=grid.querySelector(`[data-id="${id}"]`);
+    if(seat)total+=parseInt(seat.dataset.price);
+    const tag=document.createElement('span');tag.className='ps-tag';tag.textContent=id;disp.appendChild(tag);
+  });
+  priceEl.textContent='₹ '+total.toLocaleString('en-IN');
+}
+
+/* ── COUNTERS ── */
+function animateCount(el){
+  const t=+el.dataset.target;let c=0;const step=t/60;
+  const tm=setInterval(()=>{c=Math.min(c+step,t);el.textContent=Math.floor(c);if(c>=t)clearInterval(tm)},20)}
+const cntObs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting){animateCount(e.target);cntObs.unobserve(e.target)}})},{threshold:.5});
+document.querySelectorAll('[data-target]').forEach(el=>cntObs.observe(el));
+
+/* ── HERO PARALLAX ── */
+const hc=document.querySelector('.hero-content');
+document.addEventListener('mousemove',e=>{
+  if(window.innerWidth<768)return;
+  const cx=window.innerWidth/2,cy=window.innerHeight/2;
+  hc.style.transform=`translate(${(e.clientX-cx)/cx*-7}px,${(e.clientY-cy)/cy*-5}px)`});
+
+/* ── PROTECTION & COPYRIGHT ── */
+document.addEventListener('contextmenu',e=>e.preventDefault());
+document.addEventListener('copy',e=>e.preventDefault());
+document.addEventListener('selectstart',e=>e.preventDefault());
+document.addEventListener('dragstart',e=>e.preventDefault());
+document.addEventListener('mousedown',e=>{if(e.button===2)e.preventDefault()});
+document.addEventListener('keydown',e=>{
+  if(e.key==='F12'||(e.ctrlKey&&e.shiftKey&&e.key==='I')||(e.ctrlKey&&e.shiftKey&&e.key==='C')||(e.ctrlKey&&e.shiftKey&&e.key==='K')){
+    e.preventDefault();return false}});
+console.log('%c© 2026 LUMIÈRE CINEMAS','color:#b8955a;font-size:18px;font-weight:bold');
+console.log('%cAll rights reserved. Unauthorized copying, distribution, or modification prohibited.','color:#d4af7a;font-size:12px');
+</script>
+</body>
+</html>
